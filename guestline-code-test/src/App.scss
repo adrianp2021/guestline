@@ -2,6 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: 'Montserrat', sans-serif;
 }
 
 // ID
@@ -33,6 +34,14 @@
 
 #hotel-left {
   display: flex;
+}
+
+#hotel-rooms-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid black;
 }
 
 // CLASSES
@@ -73,11 +82,9 @@ span {
 }
 
 .hotel-container {
-  width: 60%;
-  height: 100%;
   margin-top: 40px;
   background: rgb(243, 242, 240);
-  padding: 10px;
+  border: 1px solid black;
 }
 
 .hotel-detail {
@@ -99,8 +106,12 @@ span {
   padding: 12px;
 }
 
-.hotel-room-left{
+.hotel-room-left {
   width: 40%;
-  border: 1px solid green;
   height: 100px;
+}
+
+.hotel-room-description {
+  width: 70%;
+  height: 100%;
 }

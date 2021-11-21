@@ -7,17 +7,18 @@ import { mapRoomsToHotel } from "../lib/mapRoomsToHotel";
 
 const Home = () => {
   const [hotels, setHotels] = useState();
-  const [adultCount, setAdultCount] = useState(0);
-  const [childCount, setChildcount] = useState(0);
+  const [adultCount, setAdultCount] = useState(6);
+  const [childCount, setChildcount] = useState(4);
   const [resolvedHotels, setResolvedHotels] = useState();
+  // const [filters, setFilters] = useState({
+  //   starRating: 1,
+  // });
 
-  const [filters, setFilters] = useState({
-    starRating: 1,
-  });
+  const [ratingFilter, setRatingFilter] = useState(0);
 
   const api = "https://obmng.dbm.guestline.net/api/hotels?collection-id=OBMNG";
 
-  //Gets list of hotels from API
+  // Get list of hotels from API
   useEffect(() => {
     const getDataFromHotels = async () => {
       const { data } = await axios.get(api);
@@ -29,56 +30,78 @@ const Home = () => {
     }
   }, []);
 
-  // Maps the hotels to a new array with the rooms
+  // Map the hotels to a new array with the rooms
   useEffect(() => {
     const mapHotels = async () => {
       const mappedHotels = await mapRoomsToHotel(hotels);
-      console.log("mappedHotels ->", mappedHotels);
+      // console.log("mappedHotels ->", mappedHotels);
       setResolvedHotels(mappedHotels);
     };
 
     if (hotels) mapHotels();
   }, [hotels]);
 
-  // Filters hotels based on the rating
+
+  // Filter hotels based on the rating
   useEffect(() => {
     if (resolvedHotels) {
-      Object.keys(filters).map(function (key, index) {
-        setFilteredResults(key);
-      });
+      setRatingFilteredList(ratingFilter);
     }
-  }, [filters]);
+  }, [ratingFilter]);
 
   useEffect(() => {
     if (adultCount) {
-      setFilters({ ...filters, maxAdults: adultCount });
+      setAdultCountFilteredList(adultCount);
     }
   }, [adultCount]);
 
   useEffect(() => {
     if (childCount) {
-      setFilters({ ...filters, maxChildren: childCount });
+      setChildCountFilteredList(childCount);
     }
   }, [childCount]);
 
-  const setFilteredResults = (filter) => {
-    const list = hotels.filter((hotel) => {
-      if (filter === "starRating") {
-        return hotel[filter] >= filters[filter];
-      } else {
-        return hotel[filter] <= filters[filter];
-      }
-    });
-    setResolvedHotels(list);
+
+
+  const setRatingFilteredList = (value) => {
+    if (resolvedHotels) {
+      const list = hotels.filter((hotel) => {
+        return hotel.starRating >= value;
+      });
+      setResolvedHotels(list);
+    }
   };
 
-  // returning the input from click on stars
-  const handleRatingFilters = (e) => {
-    setFilters({
-      ...filters,
-      starRating: e.target.attributes.getNamedItem("aria-posinset").value,
-    });
+
+  const setAdultCountFilteredList = (value) => {
+    if (resolvedHotels) {
+      const list = hotels.filter((hotel) => {
+        return hotel.maxAdults <= value;
+      });
+      setResolvedHotels(list);
+    }
   };
+
+
+  const setChildCountFilteredList = (value) => {
+    if (resolvedHotels) {
+      const list = hotels.filter((hotel) => {
+        return hotel.maxChildren <= value;
+      });
+      setResolvedHotels(list);
+    }
+  };
+
+
+  // Returning the input from click on stars
+  const handleRatingFilters = (e) => {
+    setRatingFilter(e.target.attributes.getNamedItem("aria-posinset").value);
+    console.log(
+      "e target ",
+      e.target.attributes.getNamedItem("aria-posinset").value
+    );
+  };
+
 
   // Adults count
   const increaseCount = () => {
@@ -102,12 +125,9 @@ const Home = () => {
     setChildcount(childCount - 1);
   };
 
+
   // console.log("what is hotels ->", hotels);
-
-  // ! See hotel details (including hotel name, address, and star rating) and
-  // ! room details (including room type, max adults, max children, and long description)
-
-  // console.log(resolvedHotels);
+  // console.log("what is filters ->", filters);
 
   return (
     <div>
@@ -172,7 +192,7 @@ const Home = () => {
                   </div>
                 </div>
 
-                <Rooms id={item.id} />
+                <Rooms rooms={item.rooms} />
               </Container>
             </section>
             // </>
